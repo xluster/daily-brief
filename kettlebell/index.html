@@ -164,6 +164,8 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
 .pex.rest .ord{color:var(--ok)}
 .ptxt b{font-weight:600;line-height:1.2}
 .ptxt .reps{font-size:26px}
+.pvid{align-self:flex-start;margin-top:3px;font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 0}
+.pex:not(.now) .pvid{display:none}
 .pcue{display:none;font-size:13.5px;color:var(--muted);line-height:1.3}
 .pclock{grid-area:clock;display:flex;align-items:center;gap:14px;min-width:0}
 .ptime{font-family:var(--display);font-weight:700;font-size:74px;line-height:.95}
@@ -289,6 +291,7 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
         <li>Les durées sont calculées à 3 à 4,5 secondes par répétition selon l'exercice, avec 5 secondes pour changer de bras ou s'installer au sol. Le tempo est indiqué sous chaque exercice.</li>
         <li>« ‹‹ 10 s » et « 10 s ›› » décalent le chrono. « ‹ Étape » et « « Bloc » reviennent d'abord au début, puis à l'étape ou au bloc précédent si tu touches de nouveau.</li>
         <li>Tu peux aussi toucher une étape ou un bloc dans les barres de progression pour y aller directement.</li>
+        <li>« Voir en vidéo », sous l'exercice en cours, met la séance en pause. Elle reprend toute seule quand tu reviens dans l'app.</li>
       </ul>
     </div>
 
@@ -297,6 +300,7 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
       <p class="how">L'app classe les voix françaises installées sur l'appareil et prend la meilleure : premium, puis améliorée, puis standard. Les voix fantaisie sont écartées.</p>
       <label class="fld" for="voiceSel">Voix utilisée<select id="voiceSel"><option value="">Recherche des voix…</option></select></label>
       <button type="button" class="btn" id="voiceTest">Tester la voix</button>
+      <p class="how">Musique : l'app est réglée pour se mélanger au son d'une autre app (musique, podcast) au lieu de le couper. En contrepartie, le bouton silencieux de l'iPhone coupe les bips.</p>
       <p class="how">Pour une voix plus naturelle sur iPhone : Réglages → Accessibilité → Lire et énoncer → Voix → Français, puis télécharge une voix « Premium » ou « Améliorée » (« Contenu énoncé » sur les anciennes versions d'iOS). Rouvre ensuite l'app.</p>
     </div>
 
@@ -563,7 +567,7 @@ var X={
   suit:{sp:0,n:"Tenue valise",s:"Valise",fig:"suitcase",v:"kettlebell suitcase hold",c:"Debout, kettlebell dans une main le long du corps. Reste parfaitement droit sans pencher : les obliques travaillent pour te tenir."},
   dbug:{sp:3.5,fl:1,n:"Dead bug avec kettlebell",s:"Dead bug",fig:"deadbug",sw:false,v:"kettlebell dead bug",c:"Kettlebell tenue à bras tendus au-dessus de la poitrine. Tends une jambe à la fois, lentement, bas du dos plaqué au sol."}
 };
-function E(k,r,t,o){ var e={},b=X[k],i; for(i in b) e[i]=b[i]; e.r=r; e.t=t; if(o) for(i in o) e[i]=o[i]; return e; }
+function E(k,r,t,o){ var e={},b=X[k],i; for(i in b) e[i]=b[i]; e.r=r; e.t=t; e.vq=b.v; if(o) for(i in o) e[i]=o[i]; return e; }
 function Wm(k,r,t){ return E(k,r,t,{c:"",v:"",warm:true}); }
 function per(s){ var m=Math.floor(s/60), r=s%60; return (m?m+" min":"")+(r?(m?" ":"")+r+(m?"":" s"):""); }
 function warm(a,b){ return {kind:"timed",name:"Échauffement",sec:120,how:"Une série lente de chaque exercice, à mi-effort, puis mise en place.",ex:[a,b]}; }
@@ -704,13 +708,22 @@ window.addEventListener("scroll",function(){
 
 
 /* ---------- Son, vibration, écran ---------- */
+/* Session audio « ambient » : les bips et la voix se mélangent à la musique d'une autre app au lieu de la couper (Safari 16.4+). */
+try{ if(navigator.audioSession) navigator.audioSession.type="ambient"; }catch(e){}
 var ac=null;
-function ensureAudio(){ try{ if(!ac){ var C=window.AudioContext||window.webkitAudioContext; if(C) ac=new C(); } if(ac&&ac.state==="suspended") ac.resume().catch(function(){}); }catch(e){} }
+function ensureAudio(){
+  try{
+    var C=window.AudioContext||window.webkitAudioContext;
+    if(ac&&ac.state==="closed") ac=null;
+    if(!ac&&C) ac=new C();
+    if(ac&&ac.state!=="running") ac.resume().catch(function(){});
+  }catch(e){}
+}
 function beep(f,d){ if(!store.sound||!ac) return; try{ var o=ac.createOscillator(), g=ac.createGain(), t=ac.currentTime; o.frequency.value=f; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.4,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+d); o.start(t); o.stop(t+d+0.03); }catch(e){} }
 function buzz(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
 var wl=null;
 function keepAwake(on){ try{ if(on&&!wl&&navigator.wakeLock){ navigator.wakeLock.request("screen").then(function(l){ wl=l; l.addEventListener("release",function(){ wl=null; }); }).catch(function(){}); } else if(!on&&wl){ wl.release().catch(function(){}); wl=null; } }catch(e){} }
-document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible"&&T&&T.running) keepAwake(true); });
+document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible"&&T&&T.running){ keepAwake(true); ensureAudio(); } });
 
 /* ---------- Voix : on classe les voix françaises installées et on prend la meilleure ---------- */
 var NOVELTY=/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|albert|bahh|bells|boing|bubbles|cellos|fred|jester|junior|kathy|organ|ralph|superstar|trinoids|whisper|wobble|zarvox)\b/i;
@@ -757,7 +770,7 @@ function locate(s,t){
 }
 function stageHtml(e,i){
   var ld=(e.l!==undefined)?e.l:(T.kg+" kg");
-  return '<div class="pex" data-ei="'+i+'"><div class="pfig">'+FIG.svg(e.fig)+'</div><div class="ptxt"><span class="ord"></span><b>'+esc(e.n)+'</b><span class="reps num">'+esc(e.r)+'</span>'+(ld?'<span class="load num">'+esc(ld)+'</span>':'')+(e.c?'<span class="pcue">'+esc(e.c)+'</span>':'')+'</div></div>';
+  return '<div class="pex" data-ei="'+i+'"><div class="pfig">'+FIG.svg(e.fig)+'</div><div class="ptxt"><span class="ord"></span><b>'+esc(e.n)+'</b><span class="reps num">'+esc(e.r)+'</span>'+(ld?'<span class="load num">'+esc(ld)+'</span>':'')+(e.c?'<span class="pcue">'+esc(e.c)+'</span>':'')+(e.vq?'<a class="pvid" href="https://www.youtube.com/results?search_query='+encodeURIComponent(e.vq)+'" target="_blank" rel="noopener">Voir en vidéo</a>':'')+'</div></div>';
 }
 function announce(s,at){
   var g=at.g, b=at.b, nx=s.segs[at.idx+1];
@@ -784,7 +797,7 @@ function paintToggles(){
 function openPlayer(sid,from){
   ensureAudio();
   var s=SESSIONS[sid];
-  T={s:s,kg:kgFor(s),base:s.starts[from]||0,startedAt:Date.now(),running:true,lastIdx:-1,lastSec:null,warned:false,swDone:false,jump:true,shownB:-1,shownR:"",fin:false};
+  T={s:s,kg:kgFor(s),video:false,away:false,base:s.starts[from]||0,startedAt:Date.now(),running:true,lastIdx:-1,lastSec:null,warned:false,swDone:false,jump:true,shownB:-1,shownR:"",fin:false};
   $("pTitle").textContent=s.day+" · "+s.title;
   $("pSegs").innerHTML=s.blocks.map(function(b,i){ return '<button type="button" class="seg" data-seg="'+i+'" style="flex:'+b.dur+' 1 0" aria-label="Aller au bloc '+(i+1)+' : '+esc(b.name)+'"><i></i></button>'; }).join("");
   segFill=Array.prototype.slice.call($("pSegs").querySelectorAll("i"));
@@ -835,7 +848,7 @@ function tick(){
   pTime.classList.toggle("hot",T.running&&at.left<=3);
   pTime.classList.toggle("paused",!T.running);
   var nxt= nx ? "Ensuite : "+(nx.bi!==g.bi?s.blocks[nx.bi].name+" · ":"")+nx.label+" · "+fmt(nx.dur) : "Dernière étape";
-  pSub.innerHTML="<b>"+esc(T.running?g.label:"En pause")+"</b>"+esc(nxt)+"<br>Séance "+fmtE(t)+" / "+fmtE(s.total);
+  pSub.innerHTML="<b>"+esc(T.running?g.label:(T.video?"En pause · vidéo":"En pause"))+"</b>"+esc(nxt)+"<br>Séance "+fmtE(t)+" / "+fmtE(s.total);
   paintSegs(s,t);
   stepEls.forEach(function(el,j){ var i=T.stepFirst+j, x=s.segs[i], w= i<at.idx?1:(i>at.idx?0:at.el/x.dur);
     el.classList.toggle("now",i===at.idx); el.classList.toggle("done",i<at.idx);
@@ -851,7 +864,16 @@ setInterval(tick,200);
 function seek(d){ if(!T||T.fin) return; ensureAudio(); T.base=Math.max(0,Math.min(T.s.total,now()+d)); T.startedAt=Date.now(); T.jump=true; tick(); }
 function jump(t){ if(!T||T.fin) return; ensureAudio(); T.base=Math.max(0,Math.min(T.s.total,t)); T.startedAt=Date.now(); T.lastIdx=-1; T.jump=true; tick(); }
 function cur(){ return locate(T.s,Math.min(now(),T.s.total-0.01)); }
-pPause.addEventListener("click",function(){ if(!T||T.fin) return; ensureAudio(); if(T.running){ T.base=now(); T.running=false; keepAwake(false); hush(); } else { T.startedAt=Date.now(); T.running=true; keepAwake(true); } tick(); });
+function pauseRun(){ if(!T||T.fin||!T.running) return; T.base=now(); T.running=false; keepAwake(false); hush(); tick(); }
+function resumeRun(){ if(!T||T.fin||T.running) return; ensureAudio(); T.startedAt=Date.now(); T.running=true; keepAwake(true); tick(); }
+pPause.addEventListener("click",function(){ if(!T||T.fin) return; T.video=false; if(T.running) pauseRun(); else resumeRun(); });
+/* Lien vidéo pendant la séance : pause au départ, reprise automatique au retour dans l'app. */
+pStage.addEventListener("click",function(ev){ var a=ev.target.closest("a.pvid"); if(!a||!T||T.fin) return; if(T.running){ pauseRun(); T.video=true; T.away=false; } });
+document.addEventListener("visibilitychange",function(){
+  if(!T||!T.video) return;
+  if(document.visibilityState==="hidden") T.away=true;
+  else if(T.away){ T.video=false; T.away=false; resumeRun(); say("Reprise."); }
+});
 $("pBack10").addEventListener("click",function(){ seek(-10); });
 $("pFwd10").addEventListener("click",function(){ seek(10); });
 /* Comme sur un lecteur de musique : « précédent » revient d'abord au début, puis recule. */
