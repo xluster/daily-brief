@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Kettlebell 15 min</title>
 <meta name="theme-color" content="#14202b">
 <meta name="mobile-web-app-capable" content="yes">
@@ -42,7 +42,8 @@
   --accent:#ff7a3d;--accent-soft:#3a2218;--ok:#4cc38a;--fig-far:#55626f;color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;touch-action:pan-x pan-y}
+button,a,.chip,.step,.seg{touch-action:manipulation}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;padding-bottom:calc(40px + env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
 body.lock{overflow:hidden}
 h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
@@ -58,7 +59,7 @@ header.top.hide{transform:translateY(-102%)}
 .bar h1{font-size:22px;flex:1;line-height:1.1}
 .bar h1 small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted);letter-spacing:0}
 .pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;white-space:nowrap}
-.kgsel select{font:inherit;font-weight:700;color:inherit;background:transparent;border:0;padding:0 2px}
+.kgsel select{font:inherit;font-size:16px;font-weight:700;color:inherit;background:transparent;border:0;padding:0 2px}
 
 nav.week{display:flex;gap:5px;padding:4px 16px 10px;max-width:720px;margin:0 auto}
 .chip{flex:1 1 0;min-width:0;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 2px 5px;text-align:center;line-height:1.1;position:relative}
@@ -82,9 +83,13 @@ section.panel.active{display:flex}
 .state{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ok)}
 .state::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--ok)}
 
-.weight{display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 16px}
-.weight .kg{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;white-space:nowrap}
-.weight p{margin:0;font-size:15px;line-height:1.3}
+.weight{display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px}
+.kgbox{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.kgb{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--bg);background:transparent;color:var(--bg);font-size:24px;font-weight:600;line-height:1;padding:0 0 2px}
+.kgb:disabled{opacity:.3}
+.weight .rec{display:block;margin-top:4px;opacity:.7;font-size:13px}
+.weight .kg{font-family:var(--display);font-weight:700;font-size:36px;line-height:1;white-space:nowrap;min-width:84px;text-align:center}
+.weight p{margin:0;font-size:14px;line-height:1.3}
 .go{display:block;width:100%;border:0;border-radius:14px;padding:16px;background:var(--accent);color:#fff;font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:.02em;text-align:center;text-decoration:none}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -105,7 +110,7 @@ section.panel.active{display:flex}
 .tl span b{display:block;font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis}
 .tl span.r{background:var(--bg);color:var(--muted)}
 .fld{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
-.fld select{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;max-width:100%}
+.fld select{font:inherit;font-size:16px;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;max-width:100%}
 .here{align-self:flex-start;border:1px solid var(--line);background:transparent;border-radius:10px;padding:7px 12px;font-weight:600;font-size:14px}
 
 .fig{display:block;width:100%;height:auto}
@@ -237,7 +242,6 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
 <header class="top">
   <div class="bar">
     <h1>Kettlebell 15 min<small id="weekSum">Haut du corps et abdos</small></h1>
-    <label class="pill kgsel" for="kgSel"><span class="sr">Poids du kettlebell</span><select id="kgSel"><option>12</option><option>14</option><option selected>16</option><option>18</option><option>20</option></select> kg</label>
   </div>
   <nav class="week" id="week" role="tablist" aria-label="Jours de la semaine"></nav>
 </header>
@@ -248,13 +252,13 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
   <section class="panel" id="p-guide" role="tabpanel">
     <div class="intro">
       <h2>Guide</h2>
-      <p>Cinq séances de 15 minutes du lundi au vendredi, haut du corps et abdos, avec un seul poids. Le week-end, deux séances bonus facultatives.</p>
+      <p>Cinq séances de 15 minutes du lundi au vendredi, haut du corps et abdos, avec un seul réglage de poids par séance. Le week-end, deux séances bonus facultatives.</p>
     </div>
 
     <div class="card">
       <h3>Vue d'ensemble</h3>
       <div class="tw"><table>
-        <thead><tr><th>Jour</th><th>Séance</th><th>Exercices</th></tr></thead>
+        <thead><tr><th>Jour</th><th>Séance</th><th>Poids</th><th>Exercices</th></tr></thead>
         <tbody id="ovRows"></tbody>
       </table></div>
       <p class="how">Les jours de tirage (lundi, mercredi, vendredi) alternent avec les jours de poussée (mardi, jeudi). Un même muscle n'est donc jamais travaillé deux jours de suite et récupère 48 heures.</p>
@@ -279,9 +283,10 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
     <div class="card">
       <h3>Pendant la séance</h3>
       <ul class="list">
-        <li>Règle ton poids en haut de la page. Il vaut pour tous les exercices, toute la semaine.</li>
+        <li>Chaque séance a son poids, choisi d'après l'exercice le plus difficile du jour. Règle la kettlebell une fois au début, puis n'y touche plus.</li>
         <li>Chaque tour est découpé en étapes chronométrées : exercice 1, exercice 2, repos. Le grand chrono et la voix suivent l'étape en cours.</li>
         <li>Finis chaque série à 1 ou 2 répétitions de l'échec. Si tu termines avant le bip, souffle : le repos commence plus tôt.</li>
+        <li>Les durées sont calculées à 3 à 4,5 secondes par répétition selon l'exercice, avec 5 secondes pour changer de bras ou s'installer au sol. Le tempo est indiqué sous chaque exercice.</li>
         <li>« ‹‹ 10 s » et « 10 s ›› » décalent le chrono. « ‹ Étape » et « « Bloc » reviennent d'abord au début, puis à l'étape ou au bloc précédent si tu touches de nouveau.</li>
         <li>Tu peux aussi toucher une étape ou un bloc dans les barres de progression pour y aller directement.</li>
       </ul>
@@ -307,9 +312,9 @@ code{font-size:.92em;background:var(--bg);border-radius:5px;padding:1px 5px}
     <div class="card">
       <h3>Progresser</h3>
       <ul class="list">
-        <li><b>Départ :</b> 16 kg. Si l'échelle de développé 1-2-3 est impossible, commence à 12 ou 14 kg.</li>
-        <li><b>D'abord les répétitions :</b> vise le haut de chaque fourchette, puis allonge l'échelle de développé jusqu'à 1-2-3-4.</li>
-        <li><b>Ensuite le poids :</b> quand toute la semaine passe en haut des fourchettes, monte d'un cran (18, puis 20 kg) et repars du bas.</li>
+        <li><b>Départ :</b> les poids conseillés, de 12 à 16 kg selon la séance. Si une séance est trop dure, touche − sur cette séance.</li>
+        <li><b>D'abord les répétitions :</b> vise le haut de chaque fourchette dans le temps de l'étape, sans accélérer le mouvement.</li>
+        <li><b>Ensuite le poids :</b> quand une séance passe en haut des fourchettes sur tous les tours, touche + sur cette séance (2 kg de plus) et repars du bas des fourchettes.</li>
         <li><b>À 20 kg :</b> ralentis la descente à 3 secondes et ajoute des pauses pour continuer à progresser.</li>
       </ul>
     </div>
@@ -541,59 +546,62 @@ return {svg:svg, start:start, inner:inner, still:still, keys:Object.keys(EX), EX
 
 /* ---------- Exercices ---------- */
 var X={
-  row:{n:"Rowing à un bras, en appui",s:"Rowing",fig:"row",v:"kettlebell single arm row technique",c:"Main libre sur une chaise, dos plat. Tire le coude vers la hanche sans tourner le buste, puis redescends lentement."},
-  rowP:{n:"Rowing à un bras, avec pause",s:"Rowing",fig:"row",v:"kettlebell single arm row technique",c:"Même mouvement, avec 2 secondes de pause en haut, coude contre la hanche. La pause rend le poids nettement plus difficile."},
-  curl:{n:"Curl à deux mains",s:"Curl",fig:"curl",v:"kettlebell goblet curl",c:"Kettlebell tenue par les cornes, coudes collés au corps, sans balancer le buste. Redescends en 3 secondes."},
-  po:{n:"Pull-over au sol",s:"Pull-over",fig:"pullover",v:"kettlebell pullover floor",c:"Allongé, genoux pliés, kettlebell tenue par les cornes au-dessus de la poitrine. Descends derrière la tête, bras presque tendus, côtes basses."},
-  press:{n:"Développé au-dessus de la tête, un bras",s:"Développé",fig:"press",v:"kettlebell overhead press single arm technique",c:"Départ kettlebell à l'épaule, coude contre les côtes, poignet droit. Pousse à la verticale jusqu'au bras tendu. Fessiers et abdos serrés, sans cambrer."},
-  ladder:{n:"Développé au-dessus de la tête, en échelle",s:"Échelle",fig:"press",sw:false,v:"kettlebell press ladder",c:"Échelle 1-2-3 : 1 développé par bras, puis 2, puis 3, en changeant de main à chaque marche. Si la marche 3 est impossible, arrête-toi à 1-2."},
-  fp:{n:"Développé au sol, un bras",s:"Dév. au sol",fig:"fpress",v:"kettlebell floor press single arm",c:"Allongé, genoux pliés. Pousse jusqu'au bras tendu, puis redescends lentement jusqu'à ce que l'arrière du bras touche le sol."},
-  fpP:{n:"Développé au sol, avec pause",s:"Dév. au sol",fig:"fpress",v:"kettlebell floor press single arm",c:"Même mouvement, avec 1 seconde de pause quand le bras touche le sol. Repars sans rebond."},
-  situp:{n:"Relevé de buste avec kettlebell",s:"Relevé de buste",fig:"situp",v:"kettlebell sit up",c:"Kettlebell serrée contre la poitrine, genoux pliés. Monte en déroulant le dos, redescends en 3 secondes."},
-  crunch:{n:"Crunch lesté",s:"Crunch",fig:"crunch",v:"weighted crunch kettlebell",c:"Kettlebell contre la poitrine. Enroule le haut du dos pour décoller les omoplates, bas du dos au sol. Contracte fort 1 seconde en haut."},
-  lraise:{n:"Relevés de jambes",s:"Relevés jambes",fig:"legraise",v:"lying leg raise holding kettlebell",c:"Allongé, kettlebell tenue à bras tendus au-dessus de la poitrine. Monte les jambes tendues, redescends lentement sans décoller le bas du dos."},
-  sbend:{n:"Flexion latérale",s:"Flexion lat.",fig:"sidebend",v:"kettlebell side bend obliques",c:"Kettlebell dans une main, l'autre sur la hanche. Penche-toi lentement du côté du poids, puis remonte avec les obliques opposés. Bassin immobile."},
-  halo:{n:"Halo",s:"Halo",fig:"halo",v:"kettlebell halo exercise",c:"Kettlebell tenue par les cornes devant la poitrine. Fais-la tourner lentement autour de la tête, au plus près, puis change de sens. Buste gainé, immobile."},
-  tri:{n:"Extension triceps au-dessus de la tête",s:"Triceps",fig:"tri",v:"kettlebell overhead triceps extension",c:"Kettlebell tenue par les cornes au-dessus de la tête. Descends-la derrière la nuque, coudes pointés vers le haut, puis tends les bras."},
-  suit:{n:"Tenue valise",s:"Valise",fig:"suitcase",v:"kettlebell suitcase hold",c:"Debout, kettlebell dans une main le long du corps. Reste parfaitement droit sans pencher : les obliques travaillent pour te tenir."},
-  dbug:{n:"Dead bug avec kettlebell",s:"Dead bug",fig:"deadbug",sw:false,v:"kettlebell dead bug",c:"Kettlebell tenue à bras tendus au-dessus de la poitrine. Tends une jambe à la fois, lentement, bas du dos plaqué au sol."}
+  row:{sp:3,n:"Rowing à un bras, en appui",s:"Rowing",fig:"row",v:"kettlebell single arm row technique",c:"Main libre sur une chaise, dos plat. Tire le coude vers la hanche sans tourner le buste, puis redescends lentement."},
+  rowP:{sp:4.5,n:"Rowing à un bras, avec pause",s:"Rowing",fig:"row",v:"kettlebell single arm row technique",c:"Même mouvement, avec 2 secondes de pause en haut, coude contre la hanche. La pause rend le poids nettement plus difficile."},
+  curl:{sp:4.5,n:"Curl à deux mains",s:"Curl",fig:"curl",v:"kettlebell goblet curl",c:"Kettlebell tenue par les cornes, coudes collés au corps, sans balancer le buste. Redescends en 3 secondes."},
+  po:{sp:4,fl:1,n:"Pull-over au sol",s:"Pull-over",fig:"pullover",v:"kettlebell pullover floor",c:"Allongé, genoux pliés, kettlebell tenue par les cornes au-dessus de la poitrine. Descends derrière la tête, bras presque tendus, côtes basses."},
+  press:{sp:3.5,n:"Développé au-dessus de la tête, un bras",s:"Développé",fig:"press",v:"kettlebell overhead press single arm technique",c:"Départ kettlebell à l'épaule, coude contre les côtes, poignet droit. Pousse à la verticale jusqu'au bras tendu. Fessiers et abdos serrés, sans cambrer."},
+  ladder:{sp:3.5,n:"Développé au-dessus de la tête, en échelle",s:"Échelle",fig:"press",sw:false,v:"kettlebell press ladder",c:"Échelle 1-2-3 : 1 développé par bras, puis 2, puis 3, en changeant de main à chaque marche. Si la marche 3 est impossible, arrête-toi à 1-2."},
+  fp:{sp:3.5,fl:1,n:"Développé au sol, un bras",s:"Dév. au sol",fig:"fpress",v:"kettlebell floor press single arm",c:"Allongé, genoux pliés. Pousse jusqu'au bras tendu, puis redescends lentement jusqu'à ce que l'arrière du bras touche le sol."},
+  fpP:{sp:4.5,fl:1,n:"Développé au sol, avec pause",s:"Dév. au sol",fig:"fpress",v:"kettlebell floor press single arm",c:"Même mouvement, avec 1 seconde de pause quand le bras touche le sol. Repars sans rebond."},
+  situp:{sp:4.5,fl:1,n:"Relevé de buste avec kettlebell",s:"Relevé de buste",fig:"situp",v:"kettlebell sit up",c:"Kettlebell serrée contre la poitrine, genoux pliés. Monte en déroulant le dos, redescends en 3 secondes."},
+  crunch:{sp:3,fl:1,n:"Crunch lesté",s:"Crunch",fig:"crunch",v:"weighted crunch kettlebell",c:"Kettlebell contre la poitrine. Enroule le haut du dos pour décoller les omoplates, bas du dos au sol. Contracte fort 1 seconde en haut."},
+  lraise:{sp:4,fl:1,n:"Relevés de jambes",s:"Relevés jambes",fig:"legraise",v:"lying leg raise holding kettlebell",c:"Allongé, kettlebell tenue à bras tendus au-dessus de la poitrine. Monte les jambes tendues, redescends lentement sans décoller le bas du dos."},
+  sbend:{sp:3,n:"Flexion latérale",s:"Flexion lat.",fig:"sidebend",v:"kettlebell side bend obliques",c:"Kettlebell dans une main, l'autre sur la hanche. Penche-toi lentement du côté du poids, puis remonte avec les obliques opposés. Bassin immobile."},
+  halo:{sp:4,n:"Halo",s:"Halo",fig:"halo",v:"kettlebell halo exercise",c:"Kettlebell tenue par les cornes devant la poitrine. Fais-la tourner lentement autour de la tête, au plus près, puis change de sens. Buste gainé, immobile."},
+  tri:{sp:3.5,n:"Extension triceps au-dessus de la tête",s:"Triceps",fig:"tri",v:"kettlebell overhead triceps extension",c:"Kettlebell tenue par les cornes au-dessus de la tête. Descends-la derrière la nuque, coudes pointés vers le haut, puis tends les bras."},
+  suit:{sp:0,n:"Tenue valise",s:"Valise",fig:"suitcase",v:"kettlebell suitcase hold",c:"Debout, kettlebell dans une main le long du corps. Reste parfaitement droit sans pencher : les obliques travaillent pour te tenir."},
+  dbug:{sp:3.5,fl:1,n:"Dead bug avec kettlebell",s:"Dead bug",fig:"deadbug",sw:false,v:"kettlebell dead bug",c:"Kettlebell tenue à bras tendus au-dessus de la poitrine. Tends une jambe à la fois, lentement, bas du dos plaqué au sol."}
 };
 function E(k,r,t,o){ var e={},b=X[k],i; for(i in b) e[i]=b[i]; e.r=r; e.t=t; if(o) for(i in o) e[i]=o[i]; return e; }
-function Wm(k,r,t){ return E(k,r,t,{c:"",v:""}); }
+function Wm(k,r,t){ return E(k,r,t,{c:"",v:"",warm:true}); }
+function per(s){ var m=Math.floor(s/60), r=s%60; return (m?m+" min":"")+(r?(m?" ":"")+r+(m?"":" s"):""); }
 function warm(a,b){ return {kind:"timed",name:"Échauffement",sec:120,how:"Une série lente de chaque exercice, à mi-effort, puis mise en place.",ex:[a,b]}; }
-function main(a,b){ return {kind:"rounds",name:"Bloc principal",rounds:4,period:150,how:"4 tours de 2 min 30. Chaque tour : les deux exercices, puis repos.",ex:[a,b]}; }
-function fin(a,name){ return {kind:"rounds",name:name||"Abdos",rounds:2,period:90,how:"2 séries, une toutes les 1 min 30.",ex:[a]}; }
+function main(a,b,rest){ var p=a.t+b.t+rest; return {kind:"rounds",name:"Bloc principal",rounds:4,period:p,how:"4 tours de "+per(p)+". Chaque tour : les deux exercices, puis "+rest+" s de repos.",ex:[a,b]}; }
+function fin(a,rest,name){ return {kind:"rounds",name:name||"Abdos",rounds:2,period:a.t+rest,how:"2 séries, avec "+rest+" s de repos entre les deux.",ex:[a]}; }
 
+/* Durées des étapes : répétitions maxi x tempo (sp, en secondes par répétition) x côtés,
+   + 5 s pour changer de bras, + 5 s pour s'installer au sol. Arrondi aux 5 s. */
 var ORDER=["lun","mar","mer","jeu","ven","sam","dim"];
 var SESSIONS={
-  lun:{day:"Lundi",letter:"L",tab:"Dos",title:"Dos et biceps",blocks:[
-    warm(Wm("row","6 lents par bras",50),Wm("curl","6 lents",40)),
-    main(E("row","12 par bras",60),E("curl","10–12",40)),
-    fin(E("situp","8–10",40))]},
-  mar:{day:"Mardi",letter:"M",tab:"Pecs",title:"Épaules et pecs",blocks:[
-    warm(Wm("press","3 lents par bras",40),Wm("fp","5 lents par bras",50)),
-    main(E("ladder","1-2-3 par bras",55),E("fp","8–10 par bras",55)),
-    fin(E("sbend","12 par côté",50))]},
-  mer:{day:"Mercredi",letter:"M",tab:"Dos",title:"Dos",blocks:[
-    warm(Wm("row","6 lents par bras",50),Wm("po","6 lents",40)),
-    main(E("rowP","10 par bras",75),E("po","10–12",35)),
-    fin(E("lraise","10",35))]},
-  jeu:{day:"Jeudi",letter:"J",tab:"Pecs",title:"Épaules et pecs, lourd",blocks:[
-    warm(Wm("press","3 lents par bras",40),Wm("fp","5 lents par bras",50)),
-    main(E("press","5–6 par bras",40),E("fpP","6–8 par bras",60)),
-    fin(E("crunch","12–15",40))]},
-  ven:{day:"Vendredi",letter:"V",tab:"Dos",title:"Dos et biceps",blocks:[
-    warm(Wm("row","6 lents par bras",50),Wm("curl","6 lents",40)),
-    main(E("row","12 par bras",60),E("curl","10–12",40)),
-    fin(E("sbend","12 par côté",50))]},
-  sam:{day:"Samedi",letter:"S",tab:"Bonus",title:"Épaules et triceps",bonus:true,blocks:[
-    warm(Wm("halo","3 par sens",40),Wm("tri","6 lents",35)),
-    main(E("halo","5 par sens",45),E("tri","8–12",35)),
-    fin(E("suit","30 s par côté",65),"Gainage")]},
-  dim:{day:"Dimanche",letter:"D",tab:"Bonus",title:"Abdos",bonus:true,blocks:[
-    warm(Wm("crunch","8 lents",35),Wm("dbug","5 par côté",45)),
-    main(E("situp","8–10",40),E("lraise","10",35)),
-    fin(E("dbug","8 par côté",55),"Gainage")]}
+  lun:{day:"Lundi",letter:"L",tab:"Dos",title:"Dos et biceps",kg:16,wk:"dosbi",why:"Le curl à deux mains fixe la limite. Le rowing supporterait plus : compense avec une descente lente.",blocks:[
+    warm(Wm("row","6 lents par bras",55),Wm("curl","6 lents",35)),
+    main(E("row","12 par bras",75),E("curl","8–10",45),40),
+    fin(E("situp","8–10",50),40)]},
+  mar:{day:"Mardi",letter:"M",tab:"Pecs",title:"Épaules et pecs, échelle",kg:14,wk:"mar",why:"Le développé à un bras fixe la limite. Monte dès que les 4 échelles passent proprement.",blocks:[
+    warm(Wm("press","3 lents par bras",35),Wm("fp","5 lents par bras",50)),
+    main(E("ladder","1-2-3 par bras",60),E("fp","8 par bras",65),35),
+    fin(E("crunch","12–15",50),40)]},
+  mer:{day:"Mercredi",letter:"M",tab:"Dos",title:"Dos",kg:16,wk:"mer",why:"Le pull-over fixe la limite : bras presque tendus, la charge pèse vite.",blocks:[
+    warm(Wm("row","6 lents par bras",55),Wm("po","6 lents",35)),
+    main(E("rowP","8 par bras",80),E("po","8–10",45),35),
+    fin(E("lraise","10",45),45)]},
+  jeu:{day:"Jeudi",letter:"J",tab:"Pecs",title:"Épaules et pecs, séries",kg:14,wk:"jeu",why:"6 développés stricts d'affilée par bras : à poids égal, c'est plus dur que l'échelle du mardi.",blocks:[
+    warm(Wm("press","3 lents par bras",35),Wm("fp","5 lents par bras",50)),
+    main(E("press","5–6 par bras",50),E("fpP","6 par bras",65),40),
+    fin(E("sbend","10 par côté",65),30)]},
+  ven:{day:"Vendredi",letter:"V",tab:"Dos",title:"Dos et biceps",kg:16,wk:"dosbi",why:"Le curl à deux mains fixe la limite. Le rowing supporterait plus : compense avec une descente lente.",blocks:[
+    warm(Wm("row","6 lents par bras",55),Wm("curl","6 lents",35)),
+    main(E("row","12 par bras",75),E("curl","8–10",45),40),
+    fin(E("situp","8–10",50),40)]},
+  sam:{day:"Samedi",letter:"S",tab:"Bonus",title:"Épaules et triceps",kg:12,wk:"sam",why:"Le halo et l'extension triceps se font au-dessus de la tête : reste léger.",bonus:true,blocks:[
+    warm(Wm("halo","3 par sens",35),Wm("tri","6 lents",35)),
+    main(E("halo","5 par sens",45),E("tri","8–12",45),60),
+    fin(E("suit","30 s par côté",65),30,"Gainage")]},
+  dim:{day:"Dimanche",letter:"D",tab:"Bonus",title:"Abdos",kg:12,wk:"dim",why:"Tu tiens la kettlebell à bras tendus pendant les relevés de jambes : inutile de charger plus.",bonus:true,blocks:[
+    warm(Wm("crunch","8 lents",40),Wm("dbug","5 par côté",45)),
+    main(E("situp","8–10",50),E("lraise","10",45),55),
+    fin(E("dbug","8 par côté",60),40,"Gainage")]}
 };
 /* Chaque séance est découpée en étapes : exercice 1, exercice 2, repos... */
 ORDER.forEach(function(id){
@@ -622,9 +630,10 @@ function weekStart(){ var d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%7)
 var TODAY=ORDER[(new Date().getDay()+6)%7];
 
 /* ---------- Données locales ---------- */
-var store={kg:16,voice:true,sound:true,voiceURI:"",log:[]};
-try{ var raw=localStorage.getItem("kb15-v2"); if(raw){ var o=JSON.parse(raw); if(o&&typeof o==="object"){ if(o.kg>=8&&o.kg<=32) store.kg=o.kg; store.voice=o.voice!==false; store.sound=o.sound!==false; if(typeof o.voiceURI==="string") store.voiceURI=o.voiceURI; if(Array.isArray(o.log)) store.log=o.log.filter(function(e){return e&&e.d&&SESSIONS[e.id];}); } } }catch(e){}
+var store={voice:true,sound:true,voiceURI:"",kgBy:{},log:[]};
+try{ var raw=localStorage.getItem("kb15-v2"); if(raw){ var o=JSON.parse(raw); if(o&&typeof o==="object"){ if(o.kgBy&&typeof o.kgBy==="object") Object.keys(o.kgBy).forEach(function(k){ var v=+o.kgBy[k]; if(v>=4&&v<=40) store.kgBy[k]=v; }); store.voice=o.voice!==false; store.sound=o.sound!==false; if(typeof o.voiceURI==="string") store.voiceURI=o.voiceURI; if(Array.isArray(o.log)) store.log=o.log.filter(function(e){return e&&e.d&&SESSIONS[e.id];}); } } }catch(e){}
 function save(){ try{ localStorage.setItem("kb15-v2",JSON.stringify(store)); }catch(e){} }
+function kgFor(s){ return store.kgBy[s.wk]||s.kg; }
 function doneThisWeek(id){ var ws=weekStart(); return store.log.some(function(e){ return e.id===id && e.d>=ws; }); }
 function weekText(){
   var n=0,b=0; ORDER.forEach(function(id){ if(doneThisWeek(id)){ if(SESSIONS[id].bonus) b++; else n++; } });
@@ -632,10 +641,10 @@ function weekText(){
 }
 
 /* ---------- Rendu des pages ---------- */
-function exHtml(e){
-  var ld=(e.l!==undefined)?e.l:(store.kg+" kg");
+function exHtml(e,kg){
+  var ld=(e.l!==undefined)?e.l:(kg+" kg");
   return '<div class="ex"><div class="exfig">'+FIG.svg(e.fig)+'</div><div class="extxt"><b>'+esc(e.n)+'</b><span class="reps num">'+esc(e.r)+'</span>'+
-    '<span class="load num">'+(ld?esc(ld)+' · ':'')+fmt(e.t)+'</span>'+(e.c?'<span class="cue">'+esc(e.c)+'</span>':'')+
+    '<span class="load num">'+(ld?esc(ld)+' · ':'')+fmt(e.t)+(e.sp&&!e.warm?' · ≈ '+String(e.sp).replace('.',',')+' s par rép.':'')+'</span>'+(e.c?'<span class="cue">'+esc(e.c)+'</span>':'')+
     (e.v?'<a class="vid" href="https://www.youtube.com/results?search_query='+encodeURIComponent(e.v)+'" target="_blank" rel="noopener">Voir en vidéo</a>':'')+'</div></div>';
 }
 function tlHtml(b){
@@ -644,12 +653,13 @@ function tlHtml(b){
   return h+'</div>';
 }
 function renderDay(s){
-  var h='<div class="side"><div class="intro"><h2>'+esc(s.day+" · "+s.title)+'</h2><p>'+fmtDur(s.total)+' · échauffement, 4 tours, '+esc(s.blocks[2].name.toLowerCase())+'</p>'+(s.bonus?'<span class="tagb">Bonus, facultatif</span>':'')+'</div>';
+  var kg=kgFor(s), h='<div class="side"><div class="intro"><h2>'+esc(s.day+" · "+s.title)+'</h2><p>'+fmtDur(s.total)+' · échauffement, 4 tours, '+esc(s.blocks[2].name.toLowerCase())+'</p>'+(s.bonus?'<span class="tagb">Bonus, facultatif</span>':'')+'</div>';
   if(doneThisWeek(s.id)) h+='<div class="state">Séance faite cette semaine</div>';
-  h+='<div class="weight"><span class="kg num">'+store.kg+' kg</span><p>Même poids pour tous les exercices. Règle la kettlebell une fois et n\'y touche plus.</p></div>';
+  h+='<div class="weight"><div class="kgbox"><button type="button" class="kgb" data-kgs="'+s.id+'" data-d="-2" aria-label="Baisser le poids de cette séance de 2 kg"'+(kg<=6?' disabled':'')+'>−</button><span class="kg num">'+kg+' kg</span><button type="button" class="kgb" data-kgs="'+s.id+'" data-d="2" aria-label="Augmenter le poids de cette séance de 2 kg"'+(kg>=32?' disabled':'')+'>+</button></div><p>'+esc(s.why)+' <span class="rec">'+(kg===s.kg?'Poids conseillé pour débuter.':'Conseillé pour débuter : '+s.kg+' kg.')+'</span></p></div>';
+  h+='<p class="how">Un seul réglage pour toute la séance. Trop facile sur tous les tours ? Touche + pour cette séance.</p>';
   h+='<button type="button" class="go" data-go="'+s.id+'" data-from="0">Démarrer la séance</button></div><div class="cards">';
   s.blocks.forEach(function(b,i){
-    h+='<div class="card"><div class="card-head"><h3>'+esc(b.name)+'</h3><span class="dur num">'+fmtDur(b.dur)+'</span></div><p class="how">'+esc(b.how)+'</p>'+tlHtml(b)+b.ex.map(exHtml).join("");
+    h+='<div class="card"><div class="card-head"><h3>'+esc(b.name)+'</h3><span class="dur num">'+fmtDur(b.dur)+'</span></div><p class="how">'+esc(b.how)+'</p>'+tlHtml(b)+b.ex.map(function(e){ return exHtml(e,kg); }).join("");
     if(i>0) h+='<button type="button" class="here" data-go="'+s.id+'" data-from="'+i+'">Démarrer à ce bloc</button>';
     h+='</div>';
   });
@@ -661,7 +671,9 @@ function renderWeek(){
   var n=store.log.length;
   $("histTxt").textContent = n ? (n+" séance"+(n>1?"s":"")+" enregistrée"+(n>1?"s":"")+" depuis le "+store.log[0].d.split("-").reverse().join("/")+". "+weekText()+". L'historique reste sur cet appareil.") : "Aucune séance enregistrée pour l'instant. L'historique reste sur cet appareil.";
 }
-function refresh(){ ORDER.forEach(function(id){ renderDay(SESSIONS[id]); }); renderWeek(); }
+function renderOverview(){ $("ovRows").innerHTML=ORDER.map(function(id){ var s=SESSIONS[id];
+    return "<tr><td>"+esc(s.day)+(s.bonus?"<br><small>bonus</small>":"")+"</td><td>"+esc(s.title)+"</td><td class=\"num\">"+kgFor(s)+" kg</td><td>"+esc(s.blocks[1].ex.map(function(e){return e.n;}).join(" + "))+"<br><small>"+esc(s.blocks[2].ex[0].n)+"</small></td></tr>"; }).join(""); }
+function refresh(){ ORDER.forEach(function(id){ renderDay(SESSIONS[id]); }); renderWeek(); renderOverview(); }
 
 (function build(){
   var nav=$("week"), box=$("days");
@@ -673,8 +685,6 @@ function refresh(){ ORDER.forEach(function(id){ renderDay(SESSIONS[id]); }); ren
     b.innerHTML="<b>"+s.letter+"</b><small>"+esc(s.tab)+"</small>"; nav.appendChild(b);
   });
   var g=document.createElement("button"); g.type="button"; g.id="t-guide"; g.dataset.tab="guide"; g.setAttribute("role","tab"); g.className="chip"; g.innerHTML="<b>?</b><small>Guide</small>"; nav.appendChild(g);
-  $("ovRows").innerHTML=ORDER.map(function(id){ var s=SESSIONS[id];
-    return "<tr><td>"+esc(s.day)+(s.bonus?"<br><small>bonus</small>":"")+"</td><td>"+esc(s.title)+"</td><td>"+esc(s.blocks[1].ex.map(function(e){return e.n;}).join(" + "))+"<br><small>"+esc(s.blocks[2].ex[0].n)+"</small></td></tr>"; }).join("");
 })();
 
 /* ---------- Navigation, en-tête repliable ---------- */
@@ -692,8 +702,6 @@ window.addEventListener("scroll",function(){
   lastY=y;
 },{passive:true});
 
-var kgSel=$("kgSel"); kgSel.value=String(store.kg);
-kgSel.addEventListener("change",function(){ store.kg=parseInt(kgSel.value,10)||16; save(); refresh(); });
 
 /* ---------- Son, vibration, écran ---------- */
 var ac=null;
@@ -748,14 +756,15 @@ function locate(s,t){
   var g=segs[i]; return {idx:i,g:g,b:s.blocks[g.bi],left:g.start+g.dur-t,el:t-g.start};
 }
 function stageHtml(e,i){
-  var ld=(e.l!==undefined)?e.l:(store.kg+" kg");
+  var ld=(e.l!==undefined)?e.l:(T.kg+" kg");
   return '<div class="pex" data-ei="'+i+'"><div class="pfig">'+FIG.svg(e.fig)+'</div><div class="ptxt"><span class="ord"></span><b>'+esc(e.n)+'</b><span class="reps num">'+esc(e.r)+'</span>'+(ld?'<span class="load num">'+esc(ld)+'</span>':'')+(e.c?'<span class="pcue">'+esc(e.c)+'</span>':'')+'</div></div>';
 }
 function announce(s,at){
   var g=at.g, b=at.b, nx=s.segs[at.idx+1];
   if(g.kind==="work"){
     var e=b.ex[g.ei], pre="";
-    if(g.ei===0){ if(g.round===0) pre=b.name+". "; if(b.kind==="rounds") pre+="Tour "+(g.round+1)+" sur "+b.rounds+". "; }
+    if(at.idx===0) pre="Kettlebell à "+T.kg+" kilos. ";
+    if(g.ei===0){ if(g.round===0) pre+=b.name+". "; if(b.kind==="rounds") pre+="Tour "+(g.round+1)+" sur "+b.rounds+". "; }
     say(pre+e.n+", "+spokenReps(e.r)+".");
   } else if(g.kind==="rest") say("Repos. "+g.dur+" secondes.");
   else say("Mise en place. "+(nx?s.blocks[nx.bi].name+" dans "+g.dur+" secondes.":""));
@@ -775,7 +784,7 @@ function paintToggles(){
 function openPlayer(sid,from){
   ensureAudio();
   var s=SESSIONS[sid];
-  T={s:s,base:s.starts[from]||0,startedAt:Date.now(),running:true,lastIdx:-1,lastSec:null,warned:false,swDone:false,jump:true,shownB:-1,shownR:"",fin:false};
+  T={s:s,kg:kgFor(s),base:s.starts[from]||0,startedAt:Date.now(),running:true,lastIdx:-1,lastSec:null,warned:false,swDone:false,jump:true,shownB:-1,shownR:"",fin:false};
   $("pTitle").textContent=s.day+" · "+s.title;
   $("pSegs").innerHTML=s.blocks.map(function(b,i){ return '<button type="button" class="seg" data-seg="'+i+'" style="flex:'+b.dur+' 1 0" aria-label="Aller au bloc '+(i+1)+' : '+esc(b.name)+'"><i></i></button>'; }).join("");
   segFill=Array.prototype.slice.call($("pSegs").querySelectorAll("i"));
@@ -787,10 +796,10 @@ function paintSegs(s,t){ segFill.forEach(function(el,i){ var w=(t-s.starts[i])/s
 function finish(){
   var s=T.s; T.fin=true; T.running=false;
   beep(980,0.6); buzz([300,100,300]); say("Séance terminée. Bravo !");
-  store.log.push({d:ymd(new Date()),id:s.id,kg:store.kg}); if(store.log.length>500) store.log=store.log.slice(-500); save();
+  store.log.push({d:ymd(new Date()),id:s.id,kg:T.kg}); if(store.log.length>500) store.log=store.log.slice(-500); save();
   paintSegs(s,s.total); pRun.hidden=true; pDone.hidden=false; pQuit.textContent="Fermer";
   var min=Math.round(s.total/60);
-  $("dSum").textContent=s.day+" · "+s.title+" · "+min+" min · "+store.kg+" kg";
+  $("dSum").textContent=s.day+" · "+s.title+" · "+min+" min · "+T.kg+" kg";
   $("dWeek").textContent=weekText();
   $("dHealth").href="shortcuts://run-shortcut?name=Kettlebell&input=text&text="+min;
   keepAwake(false); refresh();
@@ -862,7 +871,11 @@ pQuit.addEventListener("click",function(){
   setTimeout(function(){ if(T&&!T.fin) pQuit.textContent="Quitter"; },3000);
 });
 $("dClose").addEventListener("click",closePlayer);
-$("main").addEventListener("click",function(ev){ var b=ev.target.closest("button[data-go]"); if(b) openPlayer(b.dataset.go,+b.dataset.from); });
+$("main").addEventListener("click",function(ev){
+  var k=ev.target.closest("button[data-kgs]");
+  if(k){ var ss=SESSIONS[k.dataset.kgs], v=Math.max(6,Math.min(32,kgFor(ss)+(+k.dataset.d))); if(v===ss.kg) delete store.kgBy[ss.wk]; else store.kgBy[ss.wk]=v; save(); refresh(); return; }
+  var b=ev.target.closest("button[data-go]"); if(b) openPlayer(b.dataset.go,+b.dataset.from);
+});
 
 var resetArmed=0, histBtn=$("histReset");
 histBtn.addEventListener("click",function(){
@@ -870,6 +883,12 @@ histBtn.addEventListener("click",function(){
   resetArmed=Date.now(); histBtn.textContent="Confirmer l'effacement";
   setTimeout(function(){ histBtn.textContent="Effacer l'historique"; },3000);
 });
+
+/* ---------- Pas de zoom : ni pincement ni double appui ---------- */
+["gesturestart","gesturechange","gestureend"].forEach(function(n){ document.addEventListener(n,function(e){ e.preventDefault(); },{passive:false}); });
+document.addEventListener("touchmove",function(e){ if(e.touches&&e.touches.length>1) e.preventDefault(); },{passive:false});
+var lastTap=0;
+document.addEventListener("touchend",function(e){ var n=Date.now(); if(n-lastTap<320&&e.cancelable&&!(e.target.closest&&e.target.closest("select,a"))) e.preventDefault(); lastTap=n; },{passive:false});
 
 /* ---------- Démarrage ---------- */
 refresh();
